@@ -80,36 +80,43 @@ public class ComparePrice {
 		// go to Amazon
 		driver.get("https://www.amazon.com/");
 
-		int k = 0;
+		// Getting a set view of the Hashmap
 		Set<Map.Entry<String, String>> m = hm.entrySet();
+
+		// creating a softassert object
 		SoftAssert s = new SoftAssert();
+
+		// Traversing through each element of HashMap (each product with its price)
 		for (Entry<String, String> e : m) {
-//			if (k > 4) {
-//				break;
-//			} else {
-			// System.out.println(k);
+
+			// search in amazon with each product name
 			WebDriverWait wait = new WebDriverWait(driver, 20);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='twotabsearchtextbox']")));
 			driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']")).sendKeys(e.getKey());
 			driver.findElement(By.cssSelector("input[value='Go']")).submit();
 			Thread.sleep(1000);
+			// Retrieve the name of the product in amazon
 			String nameOfProduct = driver.findElement(By.xpath("//a[@class='a-link-normal a-text-normal']/span[1]"))
 					.getText();
 			System.out.println(nameOfProduct);
 			Thread.sleep(1000);
 
+			// soft assert the product name with the walmart product
 			s.assertEquals(nameOfProduct, e.getKey(), "The products does not match");
 
+			// retrieve the price of the product in amazon
 			String priceOfProduct = driver.findElement(By.xpath("//span[@class='a-price']/span[1]"))
 					.getAttribute("innerText");
-			// Thread.sleep(5000);
+
+			// soft assert the price with the walmart product price
 			s.assertEquals(priceOfProduct, e.getValue(), "The product price does not match");
 
+			// clear the search box for next product search
 			driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']")).clear();
-			// k++;
-			// }
 
 		}
 		s.assertAll();
+
+		driver.close();
 	}
 }
